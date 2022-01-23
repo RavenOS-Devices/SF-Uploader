@@ -52,5 +52,4 @@ jobs:
 
       - name: Upload the Build
         run: |
-          sudo apt install sshpass
-          sshpass ${SF_PASS} rsync $(ls raven_tmp/) ${SF_USERNAME}@frs.sourceforge.net:/home/frs/project/${SF_PROJECT}/${DEVICE}/
+          sshpass -p "${SF_PASS}" rsync $(ls raven_tmp/) ${SF_USERNAME}@frs.sourceforge.net:/home/frs/project/${SF_PROJECT}/${DEVICE}/
