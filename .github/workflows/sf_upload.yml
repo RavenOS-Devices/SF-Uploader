@@ -52,4 +52,4 @@ jobs:
 
       - name: Upload the Build
         run: |
-          sshpass -p "${SF_PASS}" rsync $(ls raven_tmp/) ${SF_USERNAME}@frs.sourceforge.net:/home/frs/project/${SF_PROJECT}/${DEVICE}/
+          sshpass -p "${SF_PASS}" rsync -ae "ssh -o StrictHostKeyChecking=no -p 22" raven_tmp/* ${SF_USERNAME}@frs.sourceforge.net:/home/frs/project/${SF_PROJECT}/${DEVICE}/
