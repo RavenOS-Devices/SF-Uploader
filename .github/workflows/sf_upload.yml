@@ -18,3 +18,11 @@ defaults:
 env:
   DOWNLOAD_LINK: ${{ github.event.inputs.DL_LINK }}
   DEVICE: ${{ github.event.inputs.DEVICE_CODENAME }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+       - name: Checkouts
+         uses: actions/checkout@v2
