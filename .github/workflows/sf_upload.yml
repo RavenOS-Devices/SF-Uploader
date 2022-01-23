@@ -19,6 +19,11 @@ env:
   DOWNLOAD_LINK: ${{ github.event.inputs.DL_LINK }}
   DEVICE: ${{ github.event.inputs.DEVICE_CODENAME }}
 
+  # SourceForge Credentials
+  SF_USERNAME: ${{ secrets.SF_USERNAME }}
+  SF_PASS: ${{ secrets.SF_PASSWORD }}
+  SF_PROJECT: raven-os
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,6 +34,8 @@ jobs:
 
       - name: Download Build
         run: |
+          mkdir raven_tmp
+          cd raven_tmp
           if [[ $DOWNLOAD_LINK == *"drive.google.com"* ]]; then
           pip install gdown
           if [[ $DOWNLOAD_LINK == *"file"* ]]; then
@@ -41,3 +48,9 @@ jobs:
           else
           aria2c -c -m0 -x16 -s50 $DOWNLOAD_LINK
           fi
+          cd -
+
+      - name: Upload the Build
+        run: |
+          sudo apt install sshpass
+          sshpass ${SF_PASS} rsync $(ls) ${SF_USERNAME}@frs.sourceforge.net:/home/frs/project/${SF_PROJECT}/${DEVICE}/
