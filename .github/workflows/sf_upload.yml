@@ -1,0 +1,20 @@
+name: Upload to SourceForge
+
+on:
+  workflow_dispatch:
+    inputs:
+        DL_LINK:
+          description: "Link of the File to Upload"
+          required: true
+        
+        DEVICE_CODENAME:
+          description: "Device Codename"
+          required: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  DOWNLOAD_LINK: ${{ github.event.inputs.DL_LINK }}
+  DEVICE: ${{ github.event.inputs.DEVICE_CODENAME }}
