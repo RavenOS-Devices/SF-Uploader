@@ -4,11 +4,15 @@ on:
   workflow_dispatch:
     inputs:
         DL_LINK:
-          description: "Link of the File to Upload"
+          description: "Link of the File to Upload:"
           required: true
         
         DEVICE_CODENAME:
-          description: "Device Codename"
+          description: "Device Codename:"
+          required: true
+        
+        ROM_NAME:
+          description: "ROM Name:"
           required: true
 
 defaults:
@@ -16,13 +20,17 @@ defaults:
     shell: bash
 
 env:
-  DOWNLOAD_LINK: ${{ github.event.inputs.DL_LINK }}
   DEVICE: ${{ github.event.inputs.DEVICE_CODENAME }}
+  ROM: ${{ github.event.inputs.ROM_NAME }}
+  DOWNLOAD_LINK: ${{ github.event.inputs.DL_LINK }}
 
   # SourceForge Credentials
   SF_USERNAME: ${{ secrets.SF_USERNAME }}
   SF_PASS: ${{ secrets.SF_PASSWORD }}
-  SF_PROJECT: raven-os
+  SF_PROJECT: sushrut1101-roms
+
+  # Temp (Download) Directory
+  TMP_DIR: /tmp/sf_up
 
 jobs:
   build:
@@ -34,22 +42,10 @@ jobs:
 
       - name: Download Build
         run: |
-          mkdir raven_tmp
-          cd raven_tmp
-          if [[ $DOWNLOAD_LINK == *"drive.google.com"* ]]; then
-          pip install gdown
-          if [[ $DOWNLOAD_LINK == *"file"* ]]; then
-          DOWNLOAD_LINK=$(echo $DOWNLOAD_LINK | cut -d / -f 6)
-          elif [[ $DOWNLOAD_LINK == *"id"* ]]; then
-          DOWNLOAD_LINK1=$(echo $DOWNLOAD_LINK | cut -d = -f 2 | cut -d '&' -f 1)
-          DOWNLOAD_LINK2=$(echo $DOWNLOAD_LINK | cut -d = -f 4)
-          fi
-          gdown https://drive.google.com/uc?id=$DOWNLOAD_LINK1 || gdown https://drive.google.com/uc?id=$DOWNLOAD_LINK2
-          else
-          aria2c -c -m0 -x16 -s50 $DOWNLOAD_LINK
-          fi
-          cd -
+          bash download.sh
 
       - name: Upload the Build
         run: |
-          sshpass -p "${SF_PASS}" rsync -ae "ssh -o StrictHostKeyChecking=no -p 22" raven_tmp/* ${SF_USERNAME}@frs.sourceforge.net:/home/frs/project/${SF_PROJECT}/${DEVICE}/
+          export SF_UPLOAD_DIR=$DEVICE/$ROM
+
+          sshpass -p ${SF_PASS} rsync -ae "ssh -o StrictHostKeyChecking=no" ${TMP_DIR}/* ${SF_USERNAME}@frs.sourceforge.net:/home/frs/project/${SF_PROJECT}/${SF_UPLOAD_DIR}/
