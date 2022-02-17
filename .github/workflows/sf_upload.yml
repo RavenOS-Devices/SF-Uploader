@@ -41,4 +41,4 @@ jobs:
 
       - name: Upload the Build
         run: |
-          sshpass -p ${SF_PASS} rsync -ae "ssh -o StrictHostKeyChecking=no" ${TMP_DIR}/* ${SF_USERNAME}@frs.sourceforge.net:/home/frs/project/${SF_PROJECT}/
+          sshpass -p ${SF_PASS} rsync -ae "ssh -o StrictHostKeyChecking=no" ${TMP_DIR}/* ${SF_USERNAME}@frs.sourceforge.net:/home/frs/project/${SF_PROJECT}/$DEVICE/
